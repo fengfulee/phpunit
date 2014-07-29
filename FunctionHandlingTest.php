@@ -18,12 +18,27 @@ function showName ($name) {
  */
 class T {
 
+	private $name;
+	private $age;
 	public static function showProperty ($property) {
 		print "The property is " . $property;
 	}
 
 	public function introduce ($name, $age) {
 		return "My name is " . $name . ", age is " . $age;
+	}
+
+	public function __construct ($name,$age) {
+		$this->name = $name;
+		$this->age = $age;
+	}
+
+
+	public function use_property () {
+		return array(
+			'name'	=>  $this->name,
+			'age'	=>	$this->age
+			);
 	}
 
 }
@@ -44,12 +59,16 @@ class FunctionHandlingTest extends PHPUnit_Framework_TestCase {
 		$name_upper = call_user_func('showName');
 
 		$this->expectOutputString ('The property is Vein');
-		call_user_func(array('T','showProperty'),'Vein');
+		echo call_user_func(array('T','showProperty'),'Vein');
 
 
 		$my = call_user_func(array('T','introduce'), array('vein',22));
 		$this->assertEquals ('My name is vein, age is 22', $my);
 
+		$t = new T('ve',10);
+		$ret = call_user_func(array($t, 'use_property'));
+		print($ret);
+ 
 	}	
 
 
@@ -63,6 +82,27 @@ class FunctionHandlingTest extends PHPUnit_Framework_TestCase {
 		//printf('There are %d functions',count($functions));
 		$this->assertCount(2,$functions);
 	}
+
+	public function test_call_user_func_array () {
+
+
+		//call_user_func_array(array('T','introduce'), array('vein',22));
+
+		$name = call_user_func_array('showName', array('vein'));
+		$this->assertEquals('VEIN',$name);
+
+		$this->expectOutputString('The property is male');
+		call_user_func_array(array('T','showProperty'), array('male'));
+
+
+		$t = new T('vein',22);
+		$ret = call_user_func_array(array($t, 'introduce'), array('vein', 22));
+ 		$this->assertEquals('My name is vein, age is 22',$ret);
+
+ 		$ret = call_user_func_array(array($t, 'use_property'),array());
+ 		//print_r($ret);
+	}
+
 }
 
 ?>
